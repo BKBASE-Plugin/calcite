@@ -21,12 +21,12 @@ limitations under the License.
   <parent>
     <groupId>com.tencent.bk.base.datalab</groupId>
     <artifactId>calcite</artifactId>
-    <version>1.21.0-bkbase.2</version>
+    <version>1.21.0-bkbase.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>calcite-elasticsearch</artifactId>
   <packaging>jar</packaging>
-  <version>1.21.0-bkbase.2</version>
+  <version>1.21.0-bkbase.3-SNAPSHOT</version>
   <name>Calcite Elasticsearch</name>
   <description>Elasticsearch adapter for Calcite</description>
 
