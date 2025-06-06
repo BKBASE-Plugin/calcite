@@ -1180,6 +1180,15 @@ public enum SqlKind {
   SHOW_SQL,
   TRAIN,
 
+  /** {@code LAMBDA} expression. */
+  LAMBDA,
+
+  /** Reference to lambda expression parameter.
+   *
+   * <p>(Only used at the RexNode level.)
+   */
+  LAMBDA_REF,
+
   /** DDL statement not handled above.
    *
    * <p><b>Note to other projects</b>: If you are extending Calcite's SQL parser

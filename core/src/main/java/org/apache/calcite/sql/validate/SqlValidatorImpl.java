@@ -59,6 +59,7 @@ import org.apache.calcite.sql.SqlIntervalLiteral;
 import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlLambda;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlMatchRecognize;
 import org.apache.calcite.sql.SqlMerge;
@@ -103,6 +104,7 @@ import org.apache.calcite.util.Static;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
+import static java.util.Objects.requireNonNull;
 import static org.apache.calcite.sql.SqlUtil.stripAs;
 import static org.apache.calcite.util.Static.RESOURCE;
 
@@ -1089,6 +1091,10 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   }
 
   public SqlValidatorScope getMatchRecognizeScope(SqlMatchRecognize node) {
+    return scopes.get(node);
+  }
+
+  public SqlValidatorScope getLambdaScope(SqlLambda node) {
     return scopes.get(node);
   }
 
@@ -5118,6 +5124,19 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     }
   }
 
+  @Override
+  public void validateLambda(SqlLambda lambdaExpr) {
+    final SqlLambdaScope scope = (SqlLambdaScope) scopes.get(lambdaExpr);
+    requireNonNull(scope, "scope");
+    final LambdaNamespace ns =
+            getNamespace(lambdaExpr).unwrap(LambdaNamespace.class);
+
+    deriveType(scope, lambdaExpr.getExpression());
+    RelDataType type = deriveTypeImpl(scope, lambdaExpr);
+    setValidatedNodeType(lambdaExpr, type);
+    ns.setType(type);
+  }
+
   private List<Map.Entry<String, RelDataType>> validateMeasure(SqlMatchRecognize mr,
                                                                MatchRecognizeScope scope,
                                                                boolean allRows) {
@@ -5604,6 +5623,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       case CURRENT_VALUE:
       case NEXT_VALUE:
       case WITH:
+      case LAMBDA:
         return call;
       }
       // Only visits arguments which are expressions. We don't want to

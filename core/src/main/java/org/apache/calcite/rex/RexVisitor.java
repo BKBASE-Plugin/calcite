@@ -51,6 +51,10 @@ public interface RexVisitor<R> {
   R visitTableInputRef(RexTableInputRef fieldRef);
 
   R visitPatternFieldRef(RexPatternFieldRef fieldRef);
+
+  R visitLambda(RexLambda lambda);
+
+  R visitLambdaRef(RexLambdaRef lambdaRef);
 }
 
 // End RexVisitor.java
