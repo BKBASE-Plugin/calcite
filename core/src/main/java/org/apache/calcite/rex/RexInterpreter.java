@@ -123,6 +123,14 @@ public class RexInterpreter implements RexVisitor<Comparable> {
     throw unbound(fieldRef);
   }
 
+  public Comparable visitLambda(RexLambda lambda) {
+    throw unbound(lambda);
+  }
+
+  public Comparable visitLambdaRef(RexLambdaRef lambdaRef) {
+    throw unbound(lambdaRef);
+  }
+
   public Comparable visitCall(RexCall call) {
     final List<Comparable> values = new ArrayList<>(call.operands.size());
     for (RexNode operand : call.operands) {

@@ -31,6 +31,7 @@ import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlInsert;
 import org.apache.calcite.sql.SqlIntervalQualifier;
+import org.apache.calcite.sql.SqlLambda;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlMatchRecognize;
 import org.apache.calcite.sql.SqlMerge;
@@ -278,6 +279,24 @@ public interface SqlValidator {
    * @param pattern MATCH_RECOGNIZE clause
    */
   void validateMatchRecognize(SqlCall pattern);
+
+  /**
+   * Validates a lambda expression. lambda expression will be validated twice
+   * during the validation process. The first time is validate lambda expression
+   * namespace, the second time is when validating higher order function operands
+   * type check.
+   *
+   * @param lambdaExpr Lambda expression
+   */
+  void validateLambda(SqlLambda lambdaExpr);
+
+  /**
+   * Returns the lambda expression scope.
+   *
+   * @param node Lambda expression
+   * @return naming scope for lambda expression
+   */
+  SqlValidatorScope getLambdaScope(SqlLambda node);
 
   /**
    * Validates a call to an operator.
@@ -575,6 +594,8 @@ public interface SqlValidator {
    * @return naming scope for Match recognize clause
    */
   SqlValidatorScope getMatchRecognizeScope(SqlMatchRecognize node);
+
+
 
   /**
    * Declares a SELECT expression as a cursor.

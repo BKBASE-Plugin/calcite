@@ -79,6 +79,7 @@ import org.apache.calcite.rex.RexDynamicParam;
 import org.apache.calcite.rex.RexFieldAccess;
 import org.apache.calcite.rex.RexFieldCollation;
 import org.apache.calcite.rex.RexInputRef;
+import org.apache.calcite.rex.RexLambdaRef;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexPatternFieldRef;
@@ -110,6 +111,7 @@ import org.apache.calcite.sql.SqlInsert;
 import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlLambda;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlMatchRecognize;
 import org.apache.calcite.sql.SqlMerge;
@@ -151,6 +153,7 @@ import org.apache.calcite.sql.validate.ListScope;
 import org.apache.calcite.sql.validate.MatchRecognizeScope;
 import org.apache.calcite.sql.validate.ParameterScope;
 import org.apache.calcite.sql.validate.SelectScope;
+import org.apache.calcite.sql.validate.SqlLambdaScope;
 import org.apache.calcite.sql.validate.SqlMonotonicity;
 import org.apache.calcite.sql.validate.SqlNameMatcher;
 import org.apache.calcite.sql.validate.SqlQualified;
@@ -204,6 +207,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
+import static java.util.Objects.requireNonNull;
 import static org.apache.calcite.sql.SqlUtil.stripAs;
 
 /**
@@ -1882,6 +1886,37 @@ public class SqlToRelConverter {
       SqlNode node,
       Blackboard bb) {
     return null;
+  }
+
+  /**
+   * Converts a lambda expression to a RexNode.
+   *
+   * @param bb   Blackboard
+   * @param node Lambda expression
+   * @return Relational expression
+   */
+  private RexNode convertLambda(Blackboard bb, SqlNode node) {
+    final SqlLambda call = (SqlLambda) node;
+    final SqlLambdaScope scope = (SqlLambdaScope) validator.getLambdaScope(call);
+
+    final Map<String, RexNode> nameToNodeMap = new HashMap<>();
+    final List<RexLambdaRef> parameters = new ArrayList<>(scope.getParameterTypes().size());
+    final Map<String, RelDataType> parameterTypes = scope.getParameterTypes();
+
+    int i = 0;
+    for (SqlNode p : call.getParameters()) {
+      final String name = p.toString();
+      final RexLambdaRef parameter =
+              new RexLambdaRef(i, name, requireNonNull(parameterTypes.get(name)));
+      parameters.add(parameter);
+      nameToNodeMap.put(name, parameter);
+      i++;
+    }
+
+    final Blackboard lambdaBb = createBlackboard(scope, nameToNodeMap, false);
+    lambdaBb.setRoot(bb.inputs);
+    final RexNode expr = lambdaBb.convertExpression(call.getExpression());
+    return rexBuilder.makeLambdaCall(expr, parameters);
   }
 
   private RexNode convertOver(Blackboard bb, SqlNode node) {
@@ -4647,6 +4682,9 @@ public class SqlToRelConverter {
 
       case OVER:
         return convertOver(this, expr);
+
+      case LAMBDA:
+        return convertLambda(this, expr);
 
       default:
         // fall through

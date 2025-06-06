@@ -20,12 +20,12 @@ limitations under the License.
   <parent>
     <groupId>com.tencent.bk.base.datalab</groupId>
     <artifactId>calcite</artifactId>
-    <version>1.21.0-bkbase.8</version>
+    <version>1.21.0-bkbase.9</version>
   </parent>
 
   <artifactId>calcite-linq4j</artifactId>
   <packaging>jar</packaging>
-  <version>1.21.0-bkbase.8</version>
+  <version>1.21.0-bkbase.9</version>
   <name>Calcite Linq4j</name>
   <description>Calcite Linq4j modified by Tencent blueking</description>
 

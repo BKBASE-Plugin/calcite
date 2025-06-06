@@ -72,6 +72,7 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
   ANY,
   CURSOR,
   COLUMN_LIST,
+  FUNCTION,
   GEO;
 
   private static final Map<Integer, SqlTypeFamily> JDBC_TYPE_TO_FAMILY =
@@ -176,6 +177,8 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
       return ImmutableList.of(SqlTypeName.CURSOR);
     case COLUMN_LIST:
       return ImmutableList.of(SqlTypeName.COLUMN_LIST);
+    case FUNCTION:
+      return ImmutableList.of(SqlTypeName.FUNCTION);
     default:
       throw new IllegalArgumentException();
     }
@@ -233,6 +236,10 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
       return factory.createSqlType(SqlTypeName.CURSOR);
     case COLUMN_LIST:
       return factory.createSqlType(SqlTypeName.COLUMN_LIST);
+    case FUNCTION:
+      return factory.createFunctionSqlType(
+              factory.createStructType(ImmutableList.of(), ImmutableList.of()),
+              factory.createSqlType(SqlTypeName.ANY));
     default:
       return null;
     }

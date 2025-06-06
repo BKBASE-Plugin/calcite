@@ -27,7 +27,7 @@ limitations under the License.
   <groupId>com.tencent.bk.base.datalab</groupId>
   <artifactId>calcite</artifactId>
   <packaging>pom</packaging>
-  <version>1.21.0-bkbase.8</version>
+  <version>1.21.0-bkbase.9</version>
 
   <!-- More project information. -->
   <name>Calcite</name>
@@ -265,6 +265,12 @@ limitations under the License.
         <groupId>com.tencent.bk.base.datalab</groupId>
         <artifactId>calcite-linq4j</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.checkerframework/checker-qual -->
+      <dependency>
+        <groupId>org.checkerframework</groupId>
+        <artifactId>checker-qual</artifactId>
+        <version>3.43.0</version>
       </dependency>
 
       <!-- Now third-party dependencies, sorted by groupId and artifactId. -->
