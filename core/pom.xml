@@ -20,12 +20,12 @@ limitations under the License.
   <parent>
     <groupId>com.tencent.bk.base.datalab</groupId>
     <artifactId>calcite</artifactId>
-    <version>1.21.0-bkbase.8</version>
+    <version>1.21.0-bkbase.9</version>
   </parent>
 
   <artifactId>calcite-core</artifactId>
   <packaging>jar</packaging>
-  <version>1.21.0-bkbase.8</version>
+  <version>1.21.0-bkbase.9</version>
   <name>Calcite Core</name>
   <description>Calcite Core modified by Tencent blueking</description>
 
@@ -58,6 +58,10 @@ limitations under the License.
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-dbcp2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.checkerframework</groupId>
+      <artifactId>checker-qual</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>

@@ -115,6 +115,12 @@ public class SqlTypeFactoryImpl extends RelDataTypeFactoryImpl {
     return canonize(newType);
   }
 
+  public RelDataType createFunctionSqlType(
+          RelDataType parameterType,
+          RelDataType returnType) {
+    return canonize(new FunctionSqlType(parameterType, returnType));
+  }
+
   public RelDataType createSqlIntervalType(
       SqlIntervalQualifier intervalQualifier) {
     RelDataType newType =

@@ -20,12 +20,12 @@ limitations under the License.
   <parent>
     <groupId>com.tencent.bk.base.datalab</groupId>
     <artifactId>calcite</artifactId>
-    <version>1.21.0-bkbase.8</version>
+    <version>1.21.0-bkbase.9</version>
   </parent>
 
   <artifactId>calcite-geode</artifactId>
   <packaging>jar</packaging>
-  <version>1.21.0-bkbase.8</version>
+  <version>1.21.0-bkbase.9</version>
   <name>Calcite Geode</name>
   <description>Geode adapter for Calcite</description>
 

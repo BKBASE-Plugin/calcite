@@ -221,6 +221,9 @@ public interface CalciteResource {
   @BaseMessage("Column ''{0}'' is ambiguous")
   ExInst<SqlValidatorException> columnAmbiguous(String a0, Locale locale);
 
+  @BaseMessage("Param ''{0}'' not found in lambda expression ''{1}''")
+  ExInst<SqlValidatorException> paramNotFoundInLambdaExpression(String a0, String a1, Locale locale);
+
   @BaseMessage("Operand {0} must be a query")
   ExInst<SqlValidatorException> needQueryOp(String a0, Locale locale);
 

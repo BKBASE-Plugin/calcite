@@ -80,6 +80,7 @@ import org.apache.calcite.sql.SqlJsonQueryEmptyOrErrorBehavior;
 import org.apache.calcite.sql.SqlJsonQueryWrapperBehavior;
 import org.apache.calcite.sql.SqlJsonValueEmptyOrErrorBehavior;
 import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlLambda;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlMatchRecognize;
 import org.apache.calcite.sql.SqlMerge;
@@ -896,6 +897,9 @@ void Arg0(List list, ExprContext exprContext) :
     ]
     (
         e = Default()
+    |
+        LOOKAHEAD((SimpleIdentifierOrList() | <LPAREN> <RPAREN>) <LAMBDA>)
+        e = LambdaExpression()
     |
         e = OrderedQueryOrExpr(firstExprContext)
     )
@@ -4517,6 +4521,65 @@ SqlNode Expression3(ExprContext exprContext) :
             return SqlStdOperatorTable.ROW.createCall(span().end(list1),
                 list1.toArray());
         }
+    }
+}
+
+/**
+ * Parses a lambda expression.
+ */
+SqlNode LambdaExpression() :
+{
+    final SqlNodeList parameters;
+    final SqlNode expression;
+    final Span s;
+}
+{
+    parameters = SimpleIdentifierOrListOrEmpty()
+    <LAMBDA> { s = span(); }
+    expression = Expression(ExprContext.ACCEPT_NON_QUERY)
+    {
+        return new SqlLambda(s.end(this), parameters, expression);
+    }
+}
+
+/**
+ * List of simple identifiers in parentheses or empty parentheses or one simple identifier.
+ * <ul>Examples:
+ * <li>{@code ()}
+ * <li>{@code DEPTNO}
+ * <li>{@code (EMPNO, DEPTNO)}
+ * </ul>
+ */
+SqlNodeList SimpleIdentifierOrListOrEmpty() :
+{
+    SqlNodeList list;
+}
+{
+    LOOKAHEAD(2)
+    <LPAREN> <RPAREN> { return SqlNodeList.EMPTY; }
+|
+    list = SimpleIdentifierOrList() { return list; }
+}
+
+/** List of simple identifiers in parentheses or one simple identifier.
+ *
+ * <ul>Examples:
+ * <li>{@code DEPTNO}
+ * <li>{@code (EMPNO, DEPTNO)}
+ * </ul>
+ */
+SqlNodeList SimpleIdentifierOrList() :
+{
+    SqlIdentifier id;
+    SqlNodeList list;
+}
+{
+    id = SimpleIdentifier() {
+        return new SqlNodeList(Collections.singletonList(id), id.getParserPosition());
+    }
+|
+    list = ParenthesizedSimpleIdentifierList() {
+        return list;
     }
 }
 
@@ -8531,7 +8594,6 @@ void NonReservedKeyWord2of3() :
     < EQ: "="("=")? >
 |   < GT: ">" >
 |   < LT: "<" >
-|   < LAMBDA_OPERATOR: "->" >
 |   < HOOK: "?" >
 |   < COLON: ":" >
 |   < LE: "<" (<WHITESPACE>)* "=" >
@@ -8540,6 +8602,7 @@ void NonReservedKeyWord2of3() :
 |   < NE2: "!" (<WHITESPACE>)* "=" >
 |   < PLUS: "+" >
 |   < MINUS: "-" >
+|   < LAMBDA: "->" >
 |   < STAR: "*" >
 |   < SLASH: "/" >
 |   < PERCENT_REMAINDER: "%" >

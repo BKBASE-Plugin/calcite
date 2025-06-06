@@ -118,6 +118,16 @@ public class RexVisitorImpl<R> implements RexVisitor<R> {
     return null;
   }
 
+  @Override
+  public R visitLambda(RexLambda lambda) {
+    return null;
+  }
+
+  @Override
+  public R visitLambdaRef(RexLambdaRef lambdaRef) {
+    return null;
+  }
+
   /**
    * <p>Visits an array of expressions, returning the logical 'and' of their
    * results.
